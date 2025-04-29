@@ -1,0 +1,995 @@
+{% extends 'base.html' %}
+
+{% block title %}Movies & Shows - STINS{% endblock %}
+
+{% block styles %}
+<style>
+    /* Base Styles - Exactement comme dans index.html */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: #0f0f0f;
+        color: #ffffff;
+    }
+
+    .container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    a {
+        text-decoration: none;
+        color: #ffffff;
+        transition: color 0.3s;
+    }
+
+    button {
+        cursor: pointer;
+        border: none;
+        outline: none;
+    }
+
+    /* Navbar */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 50px;
+        background-color: rgba(20, 20, 20, 0.8);
+        backdrop-filter: blur(10px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
+
+    .logo a {
+        font-size: 24px;
+        font-weight: 700;
+        color: #0d9668;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 30px;
+    }
+
+    .nav-links a {
+        color: #ffffff;
+        font-size: 14px;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+    }
+
+    .nav-links a:hover {
+        opacity: 1;
+    }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .search-icon {
+        font-size: 18px;
+        opacity: 0.8;
+        cursor: pointer;
+        transition: opacity 0.3s;
+    }
+
+    .search-icon:hover {
+        opacity: 1;
+    }
+
+    .profile-link, .logout-link {
+        font-size: 14px;
+        font-weight: 500;
+        color: #ffffff;
+        opacity: 0.9;
+        transition: opacity 0.3s;
+    }
+
+    .profile-link:hover, .logout-link:hover {
+        opacity: 1;
+    }
+
+    .sign-in {
+        font-size: 14px;
+        font-weight: 500;
+        color: #ffffff;
+        opacity: 0.9;
+        transition: opacity 0.3s;
+    }
+
+    .sign-in:hover {
+        opacity: 1;
+    }
+
+    .search-form {
+        display: flex;
+    }
+    
+    .search-input {
+        padding: 8px 12px;
+        border-radius: 4px 0 0 4px;
+        border: none;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+    
+    .search-btn {
+        padding: 8px 12px;
+        border-radius: 0 4px 4px 0;
+        border: none;
+        background-color: #10b981;
+        color: white;
+        cursor: pointer;
+    }
+
+    /* Footer */
+    footer {
+        background-color: #141414;
+        padding: 50px;
+    }
+
+    .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .footer-column h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .footer-links {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .footer-links a {
+        font-size: 14px;
+        color: #bfbfbf;
+        transition: color 0.3s;
+    }
+
+    .footer-links a:hover {
+        color: #ffffff;
+    }
+
+    .footer-bottom {
+        border-top: 1px solid #262626;
+        padding-top: 20px;
+        font-size: 12px;
+        color: #999999;
+    }
+
+    /* Styles spécifiques à la page Movies & Shows */
+    .main-content {
+        padding-top: 80px;
+        padding-bottom: 50px;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+        height: 400px;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/back.png');
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        padding: 0 50px;
+        margin-bottom: 40px;
+    }
+
+    .hero-content {
+        max-width: 600px;
+    }
+
+    .hero-title {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .hero-description {
+        font-size: 16px;
+        color: #bfbfbf;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+
+    .hero-button {
+        background-color: #10b981;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.3s;
+        border: none;
+    }
+
+    .hero-button:hover {
+        background-color: #0d9668;
+    }
+
+    /* Filters */
+    .filters-section {
+        padding: 0 50px;
+        margin-bottom: 30px;
+    }
+
+    .filters-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .filter-label {
+        font-size: 14px;
+        color: #bfbfbf;
+    }
+
+    .filter-options {
+        display: flex;
+        gap: 10px;
+    }
+
+    .filter-option {
+        padding: 8px 15px;
+        background-color: #1a1a1a;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .filter-option:hover, .filter-option.active {
+        background-color: #10b981;
+    }
+
+    .search-bar {
+        display: flex;
+        align-items: center;
+        background-color: #1a1a1a;
+        border-radius: 4px;
+        padding: 8px 15px;
+        width: 300px;
+    }
+
+    .search-input {
+        background: none;
+        border: none;
+        color: #ffffff;
+        width: 100%;
+        outline: none;
+        font-size: 14px;
+    }
+
+    .search-icon {
+        color: #bfbfbf;
+        margin-right: 10px;
+    }
+
+    /* Movies Grid */
+    .movies-section {
+        padding: 0 50px;
+        margin-bottom: 50px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .view-options {
+        display: flex;
+        gap: 10px;
+    }
+
+    .view-option {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        background-color: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .view-option:hover, .view-option.active {
+        background-color: #10b981;
+    }
+
+    .view-icon {
+        font-size: 16px;
+    }
+
+    .movies-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 25px;
+    }
+
+    .movie-card {
+        background-color: #1a1a1a;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .movie-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .movie-poster {
+        width: 100%;
+        aspect-ratio: 2/3;
+        object-fit: cover;
+    }
+
+    .movie-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.8) 100%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 20px;
+    }
+
+    .movie-card:hover .movie-overlay {
+        opacity: 1;
+    }
+
+    .movie-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .movie-action {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s;
+    }
+
+    .movie-action:hover {
+        background-color: #10b981;
+    }
+
+    .play-icon {
+        font-size: 18px;
+    }
+
+    .movie-info {
+        padding: 15px;
+    }
+
+    .movie-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .movie-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #bfbfbf;
+    }
+
+    .movie-year {
+        color: #10b981;
+    }
+
+    /* Categories */
+    .categories-section {
+        padding: 0 50px;
+        margin-bottom: 50px;
+    }
+
+    .category-row {
+        margin-bottom: 40px;
+    }
+
+    .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .category-title {
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .see-all {
+        font-size: 14px;
+        color: #10b981;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .movies-row {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        padding-bottom: 20px;
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .movies-row::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+
+    .movie-card-horizontal {
+        min-width: 300px;
+        background-color: #1a1a1a;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s;
+        cursor: pointer;
+    }
+
+    .movie-card-horizontal:hover {
+        transform: translateY(-5px);
+    }
+
+    .movie-card-content {
+        display: flex;
+    }
+
+    .movie-poster-small {
+        width: 120px;
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .movie-details {
+        padding: 15px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .movie-title-large {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .movie-description {
+        font-size: 14px;
+        color: #bfbfbf;
+        margin-bottom: 15px;
+        line-height: 1.4;
+        flex-grow: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .movie-meta-large {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #bfbfbf;
+    }
+
+    .watch-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background-color: #10b981;
+        color: white;
+        padding: 8px 0;
+        border-radius: 0 0 8px 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background-color 0.3s;
+    }
+
+    .watch-button:hover {
+        background-color: #0d9668;
+    }
+
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+        padding-bottom: 50px;
+    }
+
+    .page-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        background-color: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .page-button:hover, .page-button.active {
+        background-color: #10b981;
+    }
+
+    .page-arrow {
+        font-size: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .hero-banner, .filters-section, .movies-section, .categories-section {
+            padding: 0 30px;
+        }
+        
+        .movies-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .navbar {
+            padding: 15px 20px;
+        }
+        
+        .nav-links {
+            display: none;
+        }
+        
+        .hero-banner {
+            height: 300px;
+            padding: 0 20px;
+        }
+        
+        .hero-title {
+            font-size: 28px;
+        }
+        
+        .filters-section, .movies-section, .categories-section {
+            padding: 0 20px;
+        }
+        
+        .filters-container {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .search-bar {
+            width: 100%;
+        }
+        
+        .movies-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+        
+        .movie-card-horizontal {
+            min-width: 250px;
+        }
+        
+        .movie-poster-small {
+            width: 100px;
+            height: 150px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-banner {
+            height: 250px;
+        }
+        
+        .hero-title {
+            font-size: 24px;
+        }
+        
+        .filter-options {
+            flex-wrap: wrap;
+        }
+        
+        .movies-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .movie-card-horizontal {
+            min-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<section class="hero-banner">
+    <div class="hero-content">
+        <h1 class="hero-title">Discover Movies & Shows</h1>
+        <p class="hero-description">Explore our vast collection of movies and TV shows. From action-packed blockbusters to heartwarming dramas, we have something for everyone.</p>
+        <button class="hero-button">
+            <i class="fas fa-play"></i>
+            Start Watching
+        </button>
+    </div>
+</section>
+
+<!-- Filters -->
+<section class="filters-section">
+    <div class="filters-container">
+        <div class="filter-group">
+            <span class="filter-label">Filter by:</span>
+            <div class="filter-options">
+                <div class="filter-option active">All</div>
+                <div class="filter-option">Movies</div>
+                <div class="filter-option">TV Shows</div>
+                <div class="filter-option">New Releases</div>
+                <div class="filter-option">Popular</div>
+            </div>
+        </div>
+        
+        <div class="search-bar">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Search movies and shows...">
+        </div>
+    </div>
+</section>
+
+<!-- Featured Movies -->
+<section class="movies-section">
+    <div class="section-header">
+        <h2 class="section-title">Featured Movies</h2>
+        <div class="view-options">
+            <div class="view-option active" id="grid-view">
+                <i class="fas fa-th-large view-icon"></i>
+            </div>
+            <div class="view-option" id="list-view">
+                <i class="fas fa-list view-icon"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Grid View (Default) -->
+    <div class="movies-grid" id="grid-view-content">
+        {% for movie in all_movies %}
+        <div class="movie-card">
+            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="movie-poster">
+            <div class="movie-overlay">
+                <div class="movie-actions">
+                    <a href="{% url 'watch_movie' movie.slug %}" class="movie-action">
+                        <i class="fas fa-play play-icon"></i>
+                    </a>
+                    <div class="movie-action">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="movie-action">
+                        <i class="fas fa-thumbs-up"></i>
+                    </div>
+                </div>
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <div class="movie-meta">
+                    <span class="movie-year">{{ movie.release_date.year }}</span>
+                    <span class="movie-duration">{{ movie.duration }} min</span>
+                </div>
+            </div>
+            <div class="movie-info">
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <div class="movie-meta">
+                    <span class="movie-year">{{ movie.release_date.year }}</span>
+                    <span class="movie-duration">{{ movie.duration }} min</span>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <!-- Placeholder movies if no movies available -->
+        {% for i in "12345678"|make_list %}
+        <div class="movie-card">
+            <img src="/static/images/placeholder.jpg" alt="Placeholder Movie {{ i }}" class="movie-poster">
+            <div class="movie-overlay">
+                <div class="movie-actions">
+                    <a href="#" class="movie-action">
+                        <i class="fas fa-play play-icon"></i>
+                    </a>
+                    <div class="movie-action">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="movie-action">
+                        <i class="fas fa-thumbs-up"></i>
+                    </div>
+                </div>
+                <h3 class="movie-title">Placeholder Movie {{ i }}</h3>
+                <div class="movie-meta">
+                    <span class="movie-year">2023</span>
+                    <span class="movie-duration">120 min</span>
+                </div>
+            </div>
+            <div class="movie-info">
+                <h3 class="movie-title">Placeholder Movie {{ i }}</h3>
+                <div class="movie-meta">
+                    <span class="movie-year">2023</span>
+                    <span class="movie-duration">120 min</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    <div class="pagination">
+        <div class="page-button">
+            <i class="fas fa-chevron-left page-arrow"></i>
+        </div>
+        <div class="page-button active">1</div>
+        <div class="page-button">2</div>
+        <div class="page-button">3</div>
+        <div class="page-button">...</div>
+        <div class="page-button">10</div>
+        <div class="page-button">
+            <i class="fas fa-chevron-right page-arrow"></i>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="categories-section">
+    {% for category in categories %}
+    <div class="category-row">
+        <div class="category-header">
+            <h2 class="category-title">{{ category.name }}</h2>
+            <a href="{% url 'category_detail' category.slug %}" class="see-all">
+                See All <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+        <div class="movies-row">
+            {% for movie in category.movies.all|slice:":5" %}
+            <div class="movie-card-horizontal">
+                <div class="movie-card-content">
+                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="movie-poster-small">
+                    <div class="movie-details">
+                        <h3 class="movie-title-large">{{ movie.title }}</h3>
+                        <p class="movie-description">{{ movie.description|truncatechars:100 }}</p>
+                        <div class="movie-meta-large">
+                            <span class="movie-year">{{ movie.release_date.year }}</span>
+                            <span class="movie-duration">{{ movie.duration }} min</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'watch_movie' movie.slug %}" class="watch-button">
+                    <i class="fas fa-play"></i>
+                    Watch Now
+                </a>
+            </div>
+            {% empty %}
+            <!-- Placeholder movies if no movies in this category -->
+            {% for i in "12345"|make_list %}
+            <div class="movie-card-horizontal">
+                <div class="movie-card-content">
+                    <img src="/static/images/placeholder.jpg" alt="Placeholder Movie" class="movie-poster-small">
+                    <div class="movie-details">
+                        <h3 class="movie-title-large">{{ category.name }} Movie {{ i }}</h3>
+                        <p class="movie-description">This is a placeholder description for a movie in the {{ category.name }} category. The actual description will be displayed here.</p>
+                        <div class="movie-meta-large">
+                            <span class="movie-year">2023</span>
+                            <span class="movie-duration">120 min</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="watch-button">
+                    <i class="fas fa-play"></i>
+                    Watch Now
+                </a>
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <!-- Placeholder categories if no categories available -->
+    <div class="category-row">
+        <div class="category-header">
+            <h2 class="category-title">Action</h2>
+            <a href="#" class="see-all">
+                See All <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+        <div class="movies-row">
+            {% for i in "12345"|make_list %}
+            <div class="movie-card-horizontal">
+                <div class="movie-card-content">
+                    <img src="/static/images/placeholder.jpg" alt="Action Movie {{ i }}" class="movie-poster-small">
+                    <div class="movie-details">
+                        <h3 class="movie-title-large">Action Movie {{ i }}</h3>
+                        <p class="movie-description">This is a placeholder description for an action movie. The actual description will be displayed here.</p>
+                        <div class="movie-meta-large">
+                            <span class="movie-year">2023</span>
+                            <span class="movie-duration">120 min</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="watch-button">
+                    <i class="fas fa-play"></i>
+                    Watch Now
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="category-row">
+        <div class="category-header">
+            <h2 class="category-title">Comedy</h2>
+            <a href="#" class="see-all">
+                See All <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+        <div class="movies-row">
+            {% for i in "12345"|make_list %}
+            <div class="movie-card-horizontal">
+                <div class="movie-card-content">
+                    <img src="/static/images/placeholder.jpg" alt="Comedy Movie {{ i }}" class="movie-poster-small">
+                    <div class="movie-details">
+                        <h3 class="movie-title-large">Comedy Movie {{ i }}</h3>
+                        <p class="movie-description">This is a placeholder description for a comedy movie. The actual description will be displayed here.</p>
+                        <div class="movie-meta-large">
+                            <span class="movie-year">2023</span>
+                            <span class="movie-duration">95 min</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="watch-button">
+                    <i class="fas fa-play"></i>
+                    Watch Now
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="category-row">
+        <div class="category-header">
+            <h2 class="category-title">Drama</h2>
+            <a href="#" class="see-all">
+                See All <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+        <div class="movies-row">
+            {% for i in "12345"|make_list %}
+            <div class="movie-card-horizontal">
+                <div class="movie-card-content">
+                    <img src="/static/images/placeholder.jpg" alt="Drama Movie {{ i }}" class="movie-poster-small">
+                    <div class="movie-details">
+                        <h3 class="movie-title-large">Drama Movie {{ i }}</h3>
+                        <p class="movie-description">This is a placeholder description for a drama movie. The actual description will be displayed here.</p>
+                        <div class="movie-meta-large">
+                            <span class="movie-year">2023</span>
+                            <span class="movie-duration">130 min</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="watch-button">
+                    <i class="fas fa-play"></i>
+                    Watch Now
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // View Toggle
+        const gridViewBtn = document.getElementById('grid-view');
+        const listViewBtn = document.getElementById('list-view');
+        const gridViewContent = document.getElementById('grid-view-content');
+        
+        gridViewBtn.addEventListener('click', function() {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            // In a real implementation, you would toggle between grid and list view
+        });
+        
+        listViewBtn.addEventListener('click', function() {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            // In a real implementation, you would toggle between grid and list view
+        });
+        
+        // Filter Options
+        const filterOptions = document.querySelectorAll('.filter-option');
+        
+        filterOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                filterOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                
+                // In a real application, you would filter the content here
+                console.log('Filter selected:', this.textContent);
+            });
+        });
+        
+        // Search Functionality
+        const searchInput = document.querySelector('.search-input');
+        
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                // In a real application, you would search here
+                console.log('Search query:', this.value);
+                alert('Searching for: ' + this.value);
+            }
+        });
+        
+        // Start Watching Button
+        const startWatchingBtn = document.querySelector('.hero-button');
+        
+        startWatchingBtn.addEventListener('click', function() {
+            // Scroll to featured movies section
+            document.querySelector('.movies-section').scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+</script>
+{% endblock %}
