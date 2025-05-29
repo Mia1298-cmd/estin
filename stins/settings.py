@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'stins.urls'
@@ -154,3 +155,4 @@ SOCIALACCOUNT_LOGIN_ON_GET=True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Pour le développement
 DEFAULT_FROM_EMAIL = 'noreply@stins.com'
 SITE_URL = ' http://127.0.0.1:8000/'  
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
