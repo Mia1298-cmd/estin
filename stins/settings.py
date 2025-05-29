@@ -1,7 +1,7 @@
 
 import os
 from pathlib import Path
-import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -73,7 +73,10 @@ WSGI_APPLICATION = 'stins.wsgi.application'
 
 # Database
 DATABASES = {
-   'default': dj_database_url.config(default='db.sqlite3')
+   'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 # Password validation
@@ -155,4 +158,4 @@ SOCIALACCOUNT_LOGIN_ON_GET=True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Pour le développement
 DEFAULT_FROM_EMAIL = 'noreply@stins.com'
 SITE_URL = ' http://127.0.0.1:8000/'  
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
