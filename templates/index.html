@@ -1,0 +1,996 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}STINS - Plateforme de Streaming{% endblock %}
+
+{% block styles %}
+<style>
+    /* Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: #0f0f0f;
+        color: #ffffff;
+    }
+
+    .container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    a {
+        text-decoration: none;
+        color: #ffffff;
+        transition: color 0.3s;
+    }
+
+    button {
+        cursor: pointer;
+        border: none;
+        outline: none;
+    }
+
+    /* Navbar */
+    .navbar {
+        background: rgba(10, 10, 10, 0.45);
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        border-bottom: 1.5px solid rgba(255,255,255,0.08);
+        box-shadow: 0 4px 24px 0 rgba(0,0,0,0.12);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .navbar:hover, .navbar:focus-within {
+        background: rgba(10, 10, 10, 0.65);
+        box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
+    }
+
+    .logo a {
+        font-size: 28px;
+        font-weight: 800;
+        color: #00d4aa;
+        text-decoration: none;
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        letter-spacing: 2px;
+        text-shadow: 0 2px 12px rgba(0,212,170,0.18);
+        transition: color 0.3s;
+        animation: logoPulse 2s infinite alternate;
+        position: relative;
+        z-index: 2;
+    }
+
+    @keyframes logoPulse {
+        0% {
+            text-shadow: 0 0 8px #00d4aa, 0 0 16px rgba(0,212,170,0.18);
+            color: #00d4aa;
+            transform: scale(1);
+        }
+
+        100% {
+            text-shadow: 0 0 24px #00fff2, 0 0 32px rgba(0,212,170,0.35);
+            color: #fff;
+            transform: scale(1.08) rotate(-3deg);
+        }
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+    }
+
+    .nav-links a {
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 400;
+        transition: color 0.3s, background 0.2s;
+        letter-spacing: 0.3px;
+        border-radius: 18px;
+        padding: 7px 18px;
+        margin: 0 2px;
+        background: rgba(255,255,255,0.03);
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+        color: #00d4aa;
+        background: rgba(0,212,170,0.08);
+    }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .sign-in, .profile-link, .logout-link {
+        color: #ffffff;
+        text-decoration: none;
+        padding: 8px 16px;
+        border: 1px solid #10b981;
+        border-radius: 4px;
+        transition: all 0.3s;
+        background: rgba(255,255,255,0.06);
+        margin-left: 2px;
+    }
+
+    .sign-in:hover, .profile-link:hover, .logout-link:hover {
+        background-color: #10b981;
+        color: #000000;
+    }
+
+    /* Hero Section */
+    .hero {
+        height: 100vh;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/back.png');
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 20px;
+    }
+
+    .hero-content {
+        max-width: 800px;
+    }
+
+    .hero-title {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .hero-description {
+        font-size: 16px;
+        line-height: 1.6;
+        color: #bfbfbf;
+        margin-bottom: 30px;
+    }
+
+    .search-form {
+        display: flex;
+    }
+
+    .search-input {
+        padding: 8px 12px;
+        border-radius: 4px 0 0 4px;
+        border: none;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+    }
+
+    .search-btn {
+        padding: 8px 12px;
+        border-radius: 0 4px 4px 0;
+        border: none;
+        background-color: var(--accent-color);
+        color: white;
+        cursor: pointer;
+    }
+
+    .cta-button {
+        background-color: #10b981;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.3s;
+    }
+
+    .cta-button:hover {
+        background-color: #0d9668;
+    }
+
+    /* Categories Section */
+    .categories-section {
+        padding: 80px 50px;
+        position: relative;
+    }
+
+    .section-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .section-subtitle {
+        font-size: 16px;
+        color: #bfbfbf;
+        margin-bottom: 40px;
+    }
+
+    .categories-grid {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        padding-bottom: 20px;
+        scrollbar-width: none;
+    }
+
+    .categories-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .category-card {
+        min-width: 200px;
+        background-color: #1a1a1a;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s;
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .category-images {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 2px;
+        height: 200px;
+    }
+
+    .category-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .category-name {
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .category-name span {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .arrow-icon {
+        font-size: 14px;
+        opacity: 0.7;
+    }
+
+    .slider-controls {
+        position: absolute;
+        right: 50px;
+        top: 80px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .slider-control {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .slider-control:hover {
+        background-color: #262626;
+    }
+
+    /* FAQ Section */
+    .faq-section {
+        padding: 80px 50px;
+        background-color: #0f0f0f;
+    }
+
+    .faq-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+
+    .ask-question {
+        background-color: #10b981;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background-color 0.3s;
+    }
+
+    .ask-question:hover {
+        background-color: #0d9668;
+    }
+
+    .faq-description {
+        font-size: 16px;
+        color: #bfbfbf;
+        margin-bottom: 40px;
+    }
+
+    .faq-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .faq-item {
+        border-bottom: 1px solid #262626;
+        padding-bottom: 15px;
+    }
+
+    .faq-question {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        padding: 15px 0;
+    }
+
+    .question-number {
+        font-size: 14px;
+        font-weight: 600;
+        color: #10b981;
+        margin-right: 15px;
+    }
+
+    .question-text {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .question-toggle {
+        font-size: 20px;
+        color: #bfbfbf;
+    }
+
+    .faq-answer {
+        padding: 0 0 15px 30px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #bfbfbf;
+        display: none;
+    }
+
+    .faq-item.active .faq-answer {
+        display: block;
+    }
+
+    .faq-item.active .question-toggle {
+        transform: rotate(45deg);
+    }
+
+    /* Pricing Section */
+    .pricing-section {
+        padding: 80px 50px;
+        background-color: #0f0f0f;
+    }
+
+    .pricing-header {
+        margin-bottom: 40px;
+    }
+
+    .pricing-description {
+        font-size: 16px;
+        color: #bfbfbf;
+        margin-bottom: 30px;
+        max-width: 800px;
+    }
+
+    .pricing-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-bottom: 40px;
+    }
+
+    .toggle-option {
+        font-size: 14px;
+        color: #bfbfbf;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .toggle-option.active {
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .pricing-card {
+        background-color: #1a1a1a;
+        border-radius: 8px;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .plan-name {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .plan-description {
+        font-size: 14px;
+        color: #bfbfbf;
+        margin-bottom: 20px;
+        flex-grow: 1;
+    }
+
+    .plan-price {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .price-period {
+        font-size: 14px;
+        color: #bfbfbf;
+        margin-bottom: 20px;
+    }
+
+    .plan-button {
+        width: 100%;
+        padding: 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        transition: background-color 0.3s;
+    }
+
+    .trial-button {
+        background-color: transparent;
+        border: 1px solid #333333;
+        color: #ffffff;
+    }
+
+    .trial-button:hover {
+        background-color: #262626;
+    }
+
+    .choose-button {
+        background-color: #10b981;
+        color: #ffffff;
+    }
+
+    .choose-button:hover {
+        background-color: #0d9668;
+    }
+
+    /* Footer */
+    footer {
+        background-color: #141414;
+        padding: 50px;
+    }
+
+    .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .footer-column h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .footer-links {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .footer-links a {
+        font-size: 14px;
+        color: #bfbfbf;
+        transition: color 0.3s;
+    }
+
+    .footer-links a:hover {
+        color: #ffffff;
+    }
+
+    .footer-bottom {
+        border-top: 1px solid #262626;
+        padding-top: 20px;
+        font-size: 12px;
+        color: #999999;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .hero-title {
+            font-size: 36px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+        }
+        
+        .categories-section, .faq-section, .pricing-section, footer {
+            padding: 60px 30px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .navbar {
+            padding: 15px 20px;
+        }
+        
+        .nav-links {
+            display: none;
+        }
+        
+        .hero-title {
+            font-size: 28px;
+        }
+        
+        .hero-description {
+            font-size: 14px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+        }
+        
+        .section-subtitle {
+            font-size: 14px;
+        }
+        
+        .categories-section, .faq-section, .pricing-section, footer {
+            padding: 40px 20px;
+        }
+        
+        .pricing-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .footer-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 24px;
+        }
+        
+        .cta-button {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .footer-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">The Best Streaming Experience</h1>
+        <p class="hero-description">
+            Stream the latest movies, TV shows, and exclusive originals all in one place. With STINS, you can enjoy a wide variety of content, including the latest blockbusters, classic movies, popular TV shows, and more. You can also create your own watchlists, so you can easily find the content you want to watch.
+        </p>
+        <button class="cta-button">
+            <i class="fas fa-play"></i>
+            Start Watching Now
+        </button>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section">
+    <h2 class="section-title">Explore our wide variety of categories</h2>
+    <p class="section-subtitle">Whether you're looking for a comedy to make you laugh, a drama to make you think, or a documentary to learn something new.</p>
+    
+    <div class="slider-controls">
+        <div class="slider-control">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="slider-control">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </div>
+    
+    <div class="categories-grid" id="categories-container">
+        <div class="category-card">
+            <div class="category-images">
+                <img src="{% static 'images/dune.jpg' %}" alt="Action 1" class="category-image">
+                <img src="{% static 'images/4.jpg' %}" alt="Action 2" class="category-image">
+                <img src="{% static 'images/5.jpg' %}" alt="Action 3" class="category-image">
+                <img src="{% static 'images/6.jpg' %}" alt="Action 4" class="category-image">
+            </div>
+            <div class="category-name">
+                <span>Action</span>
+                <i class="fas fa-arrow-right arrow-icon"></i>
+            </div>
+        </div>
+        <div class="category-card">
+            <div class="category-images">
+                <img src="{% static 'images/7.jpg' %}" alt="Adventure 1" class="category-image">
+                <img src="{% static 'images/8.jpg' %}" alt="Adventure 2" class="category-image">
+                <img src="{% static 'images/9.jpg' %}" alt="Adventure 3" class="category-image">
+                <img src="{% static 'images/10.jpg' %}" alt="Adventure 4" class="category-image">
+            </div>
+            <div class="category-name">
+                <span>Adventure</span>
+                <i class="fas fa-arrow-right arrow-icon"></i>
+            </div>
+        </div>
+        <div class="category-card">
+            <div class="category-images">
+                <img src="{% static 'images/11.jpg' %}" alt="Comedy 1" class="category-image">
+                <img src="{% static 'images/12.jpg' %}" alt="Comedy 2" class="category-image">
+                <img src="{% static 'images/dune.jpg' %}" alt="Comedy 3" class="category-image">
+                <img src="{% static 'images/4.jpg' %}" alt="Comedy 4" class="category-image">
+            </div>
+            <div class="category-name">
+                <span>Comedy</span>
+                <i class="fas fa-arrow-right arrow-icon"></i>
+            </div>
+        </div>
+        <div class="category-card">
+            <div class="category-images">
+                <img src="{% static 'images/5.jpg' %}" alt="Drama 1" class="category-image">
+                <img src="{% static 'images/6.jpg' %}" alt="Drama 2" class="category-image">
+                <img src="{% static 'images/7.jpg' %}" alt="Drama 3" class="category-image">
+                <img src="{% static 'images/8.jpg' %}" alt="Drama 4" class="category-image">
+            </div>
+            <div class="category-name">
+                <span>Drama</span>
+                <i class="fas fa-arrow-right arrow-icon"></i>
+            </div>
+        </div>
+        <div class="category-card">
+            <div class="category-images">
+                <img src="{% static 'images/9.jpg' %}" alt="Horror 1" class="category-image">
+                <img src="{% static 'images/10.jpg' %}" alt="Horror 2" class="category-image">
+                <img src="{% static 'images/11.jpg' %}" alt="Horror 3" class="category-image">
+                <img src="{% static 'images/12.jpg' %}" alt="Horror 4" class="category-image">
+            </div>
+            <div class="category-name">
+                <span>Horror</span>
+                <i class="fas fa-arrow-right arrow-icon"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="faq-header">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <button class="ask-question">Ask a Question</button>
+    </div>
+    <p class="faq-description">Got questions? We've got answers! Check out our FAQ section to find answers to the most common questions about Streamflix.</p>
+    
+    <div class="faq-list">
+        <!-- FAQ Item 1 -->
+        <div class="faq-item active">
+            <div class="faq-question">
+                <div class="question-left">
+                    <span class="question-number">01</span>
+                    <span class="question-text">What is STINS?</span>
+                </div>
+                <div class="question-toggle">-</div>
+            </div>
+            <div class="faq-answer">
+                STINS is a streaming service that allows you to watch movies and shows on-demand.
+            </div>
+        </div>
+        
+        <!-- FAQ Item 2 -->
+        <div class="faq-item">
+            <div class="faq-question">
+                <div class="question-left">
+                    <span class="question-number">02</span>
+                    <span class="question-text">How much does STINS cost?</span>
+                </div>
+                <div class="question-toggle">+</div>
+            </div>
+            <div class="faq-answer">
+                STINS offers three subscription plans: Basic ($4.99/month), Standard ($9.99/month), and Premium ($14.99/month). Each plan offers different features and content access.
+            </div>
+        </div>
+        
+        <!-- FAQ Item 3 -->
+        <div class="faq-item">
+            <div class="faq-question">
+                <div class="question-left">
+                    <span class="question-number">03</span>
+                    <span class="question-text">What content is available on STINS?</span>
+                </div>
+                <div class="question-toggle">+</div>
+            </div>
+            <div class="faq-answer">
+                STINS offers a wide variety of content including movies, TV shows, documentaries, and exclusive original productions. Our library is constantly updated with new releases and classics.
+            </div>
+        </div>
+        
+        <!-- FAQ Item 4 -->
+        <div class="faq-item">
+            <div class="faq-question">
+                <div class="question-left">
+                    <span class="question-number">04</span>
+                    <span class="question-text">How can I watch STINS?</span>
+                </div>
+                <div class="question-toggle">+</div>
+            </div>
+            <div class="faq-answer">
+                You can watch STINS on any device with an internet connection, including smart TVs, smartphones, tablets, computers, and gaming consoles. Simply download our app or visit our website.
+            </div>
+        </div>
+        
+        <!-- FAQ Item 5 -->
+        <div class="faq-item">
+            <div class="faq-question">
+                <div class="question-left">
+                    <span class="question-number">05</span>
+                    <span class="question-text">How do I sign up for STINS?</span>
+                </div>
+                <div class="question-toggle">+</div>
+            </div>
+            <div class="faq-answer">
+                Signing up for STINS is easy! Just click the "Sign Up" button, choose your subscription plan, create an account, and enter your payment information. You'll be streaming in minutes!
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="pricing-section">
+    <div class="pricing-header">
+        <h2 class="section-title">Choose the plan that's right for you</h2>
+        <p class="pricing-description">Join 65 million+ and select from our flexible subscription options tailored to suit your viewing preferences. Get ready for non-stop entertainment!</p>
+    </div>
+    
+    <div class="pricing-toggle">
+        <span class="toggle-option active">Monthly</span>
+        <span class="toggle-option">Yearly</span>
+    </div>
+    
+    <div class="pricing-grid">
+        <!-- Basic Plan -->
+        <div class="pricing-card">
+            <h3 class="plan-name">Basic Plan</h3>
+            <p class="plan-description">Enjoy an assortment of movies and shows, featuring a range of content, including recently released titles.</p>
+            <div class="plan-price">$4.99</div>
+            <div class="price-period">/month</div>
+            <button class="plan-button trial-button">Start Free Trial</button>
+            <button class="plan-button choose-button">Choose Plan</button>
+        </div>
+        
+        <!-- Standard Plan -->
+        <div class="pricing-card">
+            <h3 class="plan-name">Standard Plan</h3>
+            <p class="plan-description">Access to a wider selection of movies, including most new releases and exclusive content.</p>
+            <div class="plan-price">$9.99</div>
+            <div class="price-period">/month</div>
+            <button class="plan-button trial-button">Start Free Trial</button>
+            <button class="plan-button choose-button">Choose Plan</button>
+        </div>
+        
+        <!-- Premium Plan -->
+        <div class="pricing-card">
+            <h3 class="plan-name">Premium Plan</h3>
+            <p class="plan-description">Access to our entire library of movies and shows, including all new releases and Offline Viewing.</p>
+            <div class="plan-price">$14.99</div>
+            <div class="price-period">/month</div>
+            <button class="plan-button trial-button">Start Free Trial</button>
+            <button class="plan-button choose-button">Choose Plan</button>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load categories
+        fetch('/api/movies/categories/')
+            .then(response => response.json())
+            .then(data => {
+                const categoriesContainer = document.getElementById('categories-container');
+                
+                // If no categories are available yet, show placeholders
+                if (data.length === 0 || data.results.length === 0) {
+                    const categories = ['Action', 'Adventure', 'Comedy', 'Drama', 'Horror'];
+                    
+                    categories.forEach(category => {
+                        categoriesContainer.innerHTML += `
+                            <div class="category-card">
+                                <div class="category-images">
+                                    <img src="/static/images/placeholder.jpg" alt="${category} Movie 1" class="category-image">
+                                    <img src="/static/images/placeholder.jpg" alt="${category} Movie 2" class="category-image">
+                                    <img src="/static/images/placeholder.jpg" alt="${category} Movie 3" class="category-image">
+                                    <img src="/static/images/placeholder.jpg" alt="${category} Movie 4" class="category-image">
+                                </div>
+                                <div class="category-name">
+                                    <span>${category}</span>
+                                    <i class="fas fa-arrow-right arrow-icon"></i>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    // Use actual categories from API
+                    const categories = data.results || data;
+                    
+                    categories.forEach(category => {
+                        categoriesContainer.innerHTML += `
+                            <div class="category-card">
+                                <div class="category-images">
+                                    <img src="/static/images/placeholder.jpg" alt="${category.name} Movie 1" class="category-image">
+                                    <img src="/static/images/placeholder.jpg" alt="${category.name} Movie 2" class="category-image">
+                                    <img src="/static/images/placeholder.jpg" alt="${category.name} Movie 3" class="category-image">
+                                    <img src="/static/images/placeholder.jpg" alt="${category.name} Movie 4" class="category-image">
+                                </div>
+                                <div class="category-name">
+                                    <span>${category.name}</span>
+                                    <i class="fas fa-arrow-right arrow-icon"></i>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+                
+                // Show placeholders if API fails
+                const categoriesContainer = document.getElementById('categories-container');
+                const categories = ['Action', 'Adventure', 'Comedy', 'Drama', 'Horror'];
+                
+                categories.forEach(category => {
+                    categoriesContainer.innerHTML += `
+                        <div class="category-card">
+                            <div class="category-images">
+                                <img src="/static/images/placeholder.jpg" alt="${category} Movie 1" class="category-image">
+                                <img src="/static/images/placeholder.jpg" alt="${category} Movie 2" class="category-image">
+                                <img src="/static/images/placeholder.jpg" alt="${category} Movie 3" class="category-image">
+                                <img src="/static/images/placeholder.jpg" alt="${category} Movie 4" class="category-image">
+                            </div>
+                            <div class="category-name">
+                                <span>${category}</span>
+                                <i class="fas fa-arrow-right arrow-icon"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        
+        // FAQ Accordion
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            
+            question.addEventListener('click', () => {
+                // Close all other items
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                        const toggle = otherItem.querySelector('.question-toggle');
+                        toggle.textContent = '+';
+                    }
+                });
+                
+                // Toggle current item
+                item.classList.toggle('active');
+                const toggle = item.querySelector('.question-toggle');
+                toggle.textContent = item.classList.contains('active') ? '-' : '+';
+            });
+        });
+        
+        // Pricing Toggle
+        const toggleOptions = document.querySelectorAll('.toggle-option');
+        
+        toggleOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                toggleOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                
+                // Update pricing based on selected option
+                const isYearly = option.textContent === 'Yearly';
+                const prices = document.querySelectorAll('.plan-price');
+                const periods = document.querySelectorAll('.price-period');
+                
+                if (isYearly) {
+                    prices[0].textContent = '$49.99';
+                    prices[1].textContent = '$99.99';
+                    prices[2].textContent = '$149.99';
+                    periods.forEach(period => period.textContent = '/year');
+                } else {
+                    prices[0].textContent = '$4.99';
+                    prices[1].textContent = '$9.99';
+                    prices[2].textContent = '$14.99';
+                    periods.forEach(period => period.textContent = '/month');
+                }
+            });
+        });
+        
+        // Category Slider Controls
+        const sliderControls = document.querySelectorAll('.slider-control');
+        const categoriesGrid = document.querySelector('.categories-grid');
+        
+        sliderControls[0].addEventListener('click', () => {
+            categoriesGrid.scrollBy({
+                left: -230,
+                behavior: 'smooth'
+            });
+        });
+        
+        sliderControls[1].addEventListener('click', () => {
+            categoriesGrid.scrollBy({
+                left: 230,
+                behavior: 'smooth'
+            });
+        });
+        
+        // CTA Button and Plan Buttons
+        const ctaButton = document.querySelector('.cta-button');
+        const trialButtons = document.querySelectorAll('.trial-button');
+        const choosePlanButtons = document.querySelectorAll('.choose-button');
+        
+        ctaButton.addEventListener('click', () => {
+            window.location.href = '{% url "signup" %}';
+        });
+        
+        trialButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                window.location.href = '{% url "signup" %}';
+            });
+        });
+        
+        choosePlanButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                window.location.href = '{% url "signup" %}';
+            });
+        });
+        
+        // Ask Question Button
+        const askQuestionButton = document.querySelector('.ask-question');
+        
+        askQuestionButton.addEventListener('click', () => {
+            alert('Cette fonctionnalité sera bientôt disponible!');
+        });
+    });
+</script>
+{% endblock %}
